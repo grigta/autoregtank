@@ -28,7 +28,8 @@ Environment
 - MISTRAL_API_KEY must be set in your environment or .env file. If missing, the CLI exits with a helpful error.
 
 Outputs
-- Transcript JSONL: one JSON object per line with fields {ts, role, content, model, iteration}
+- Transcript JSONL: one JSON object per line with fields {ts, role, content, model, iteration}.
+- Additional fields are included to help separate improved vs. older dialogue turns: {stage, bucket}. Bucket is "improved" for revised/final answers and "old" otherwise.
 - Result text: final answer
 
 Testing

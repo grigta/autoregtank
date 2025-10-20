@@ -9,7 +9,7 @@ from rich.console import Console
 from dotenv import load_dotenv
 
 from .client import MissingAPIKeyError
-from .engine import SelfTalkEngine, EngineConfig, write_transcript_jsonl
+from .engine import SelfTalkEngine, EngineConfig, write_transcript_jsonl, write_transcript_split_json
 from .prompts import resolve_prompt_input
 
 app = typer.Typer(add_completion=False, help="Self-dialogue generator using Mistral API")
@@ -27,7 +27,7 @@ def run(
     max_tokens: int = typer.Option(1024, "--max-tokens", help="Max tokens for the response"),
     top_p: Optional[float] = typer.Option(None, "--top-p", help="Nucleus sampling top_p"),
     seed: Optional[int] = typer.Option(None, "--seed", help="Optional random seed for deterministic responses"),
-    out: Path = typer.Option(Path("transcript.jsonl"), "--out", help="Path to save transcript JSONL"),
+    out: Path = typer.Option(Path("transcript.jsonl"), "--out", help="Path to save transcript (JSONL or .json for split view)"),
     result: Path = typer.Option(Path("result.txt"), "--result", help="Path to save final result"),
 ):
     """Run the self-dialogue engine and save transcript/result."""
@@ -69,7 +69,10 @@ def run(
     out.parent.mkdir(parents=True, exist_ok=True)
     result.parent.mkdir(parents=True, exist_ok=True)
 
-    write_transcript_jsonl(transcript, str(out))
+    if out.suffix.lower() == ".json":
+        write_transcript_split_json(transcript, str(out))
+    else:
+        write_transcript_jsonl(transcript, str(out))
 
     with open(result, "w", encoding="utf-8") as f:
         f.write(final)
